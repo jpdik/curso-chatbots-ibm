@@ -18,7 +18,7 @@ const assistant = new watson.AssistantV1({
 */
 construirCenario = (input) => new Promise((resolve, reject) => {
     // Pesquisa o contextID informado, se não existir, cria uma nova conversa e a retorna usando o resolve
-    pageChatService.find({ contextId: input.contextId }, (err, data) => {
+    pageChatService.find({ session_id: input.session_id }, (err, data) => {
         if (err || data.length == 0 || data == undefined) {
 
             let pageChat = new pageChatService({
@@ -123,7 +123,7 @@ detectarProduto = (response) => new Promise((resolve, reject) => {
     }
 });
 
-module.exports.analisarResponderMensagem = (input) => new Promise((resolve, reject) => {P
+module.exports.analisarResponderMensagem = (input) => new Promise((resolve, reject) => {
     // Primeiro, checo na entrada do usuário, se ele me passou um contextId, e retorno o novo ou antigo usuário dele (user)
     construirCenario(input).then((user) => {
         // envio ao watson a sessão do usuário e a mensagem que ele informou para análise.
@@ -139,6 +139,7 @@ module.exports.analisarResponderMensagem = (input) => new Promise((resolve, reje
                     reject(err);
                 }
                 else {
+                    console.log(res);
                     detectarProduto(res).then((resp) => { 
                     // se tiver ok passo para o detectarProduto fazer as devidas alterações e retornar uma nova resposta (resp)
 
@@ -149,7 +150,6 @@ module.exports.analisarResponderMensagem = (input) => new Promise((resolve, reje
 
                         // Armazeno o fluxo de contexto da conversação que foi obtida como respota do watson na sessão do usuário.
                         user.context = resp.context;
-                        user.save() //Salvo o novo usuário no banco de dados (com a nova mensagem e o novo contexto).
 
                         resolve([user, resp]); // retorno o objeto usuário e o objeto de resposta do watson.
                     });

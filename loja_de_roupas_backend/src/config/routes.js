@@ -25,7 +25,7 @@ module.exports = function (server) {
 
         // Chama a função que vai analisar a mensagem do usuário, e responder
         chatBot.analisarResponderMensagem({
-            session_id: req.body.contextId, //id do contexto que será verificado para continuar a conversa
+            session_id: req.body.session_id, //id do contexto que será verificado para continuar a conversa
             message: {
                 text: req.body.message || undefined //Mensagem que o usuário forneceu. caso esteja vazia, envia o undefined
             }

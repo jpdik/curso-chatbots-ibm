@@ -8,12 +8,12 @@ const messageSchema = new mongoose.Schema({
 })
 
 const pageChatSchema = new mongoose.Schema({
-    session_id: { type: String, required: true },
+    session_id: { type: String },
     context: {},
     userName: { type: String },
     input: {},
     messages: [messageSchema]
-})
+}, { usePushEach: true })
 
 /* Estrutura que terá cada novo chat.
     Exemplo:
