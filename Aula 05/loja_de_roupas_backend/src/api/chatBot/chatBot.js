@@ -1,14 +1,13 @@
 require('dotenv').config() //Obtem as variáveis de ambiente do arquivo '.env'
-const watson = require('watson-developer-cloud');
+var AssistantV1 = require('ibm-watson/assistant/v1');
 const chatService = require('../chat/chatService')
 const produtosService = require('../produtos/produtosService')
 
 // Configuração do asistente do IBM Watson (Chaves)
 // todo process.env.<VALOR> é uma variável de ambiente
-const assistant = new watson.AssistantV1({
+const assistant = new AssistantV1({
     username: process.env.WATSON_USERNAME,
     password: process.env.WATSON_PASSWORD,
-    url: process.env.WATSON_URL,
     version: process.env.WATSON_VERSION
 });
 
@@ -131,8 +130,8 @@ module.exports.analisarConstruirMensagem = (input) => new Promise((resolve, reje
             session_id: user.session_id,
             context: user.context,
             input: user.input
-        },
-            (err, res) => { // checo os erros e resposta do watson
+        })
+        .then((err, res) => { // checo os erros e resposta do watson
                 // Se tiver algum erro, simplesmente falho a promisse
                 if (err) {
                     reject(err);
@@ -160,6 +159,6 @@ module.exports.analisarConstruirMensagem = (input) => new Promise((resolve, reje
                         resolve(user); // retorno o objeto usuário e o objeto de resposta do watson.
                     });
                 }
-            });
+        });
     })
 });

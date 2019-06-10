@@ -946,8 +946,8 @@ agora pegamos esse objeto retornado e a variavel de ambiente de WORKSPACE da ski
             session_id: user.session_id,
             context: user.context,
             input: user.input
-        },
-            (err, res) => {
+        })
+        .then((err, res) => {
 ```
 
 Vamos verificar se a resposta ocorrer tudo certo pelas variável de retorno `err` e `res`. Se ouve erro simplesmente rejeitamos:
@@ -1121,8 +1121,8 @@ module.exports.analisarConstruirMensagem = (input) => new Promise((resolve, reje
             session_id: user.session_id,
             context: user.context,
             input: user.input
-        },
-            (err, res) => {
+        })
+        .then((err, res) => {
                 if (err) {
                     reject(err);
                 }
