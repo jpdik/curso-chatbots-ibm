@@ -1,4 +1,7 @@
-const port = 3003 //Definimos em qual porta, nosso servidor vai rodar.
+const options = {
+    host: "localhost",
+    port: process.env.PORT || 3003
+};
 
 /* 
     Todas as bibliotecas que precisamos, serão importadas utilizando a função require('nome_do_import')
@@ -22,10 +25,10 @@ server.use(allowCors) // Esse midleware faz com que as requisições tenham o CO
 server.use(queryParser()) //Converte valores passados string que seriam números para o seu tipo corretamente
 
 // Rodamos o serviço após aplicar todos os midlewares
-server.listen(port, function(){
+server.listen(options, function(){
     //Gera uma lista de produtos no banco caso ele esteja vazio.
     produtosMock.checkDataBase();
-    console.log(`Backend está rodando na porta ${port}.`);
+    console.log(`Backend está rodando em http://${options.host}:${options.port}/`);
 })
 
 // Após isso, o servidor vai estar rodando em http://localhost:3003/.

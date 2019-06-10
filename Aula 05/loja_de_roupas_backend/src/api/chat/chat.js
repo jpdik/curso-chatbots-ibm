@@ -7,7 +7,7 @@ const messageSchema = new mongoose.Schema({
     sendAt: { type: Date, default: Date.now }
 })
 
-const pageChatSchema = new mongoose.Schema({
+const chatSchema = new mongoose.Schema({
     session_id: { type: String },
     context: {},
     userName: { type: String },
@@ -39,4 +39,4 @@ const pageChatSchema = new mongoose.Schema({
 */
 
 // Cria o modelo do esquema (rest) e o exporta
-module.exports = restful.model('PageChat', pageChatSchema)
+module.exports = restful.model('Chat', chatSchema)

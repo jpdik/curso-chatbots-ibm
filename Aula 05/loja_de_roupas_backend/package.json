@@ -5,21 +5,25 @@
   "main": "src/loader.js",
   "scripts": {
     "dev": "nodemon",
-    "production": "pm2 start src/loader.js --name page_chat-api",
-    "production-stop": "pm2 stop page_chat-api"
+    "production": "pm2 start src/loader.js --name chat_api",
+    "production-stop": "pm2 stop chat_api"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
     "body-parser": "^1.15.2",
+    "dotenv": "^6.2.0",
     "express": "^4.14.0",
     "express-query-int": "^1.0.1",
     "mongoose": "^4.7.0",
     "node-restful": "^0.2.5",
     "nodemon": "^1.11.0",
     "pm2": "^2.1.5",
-    "watson-developer-cloud": "^3.15.1",
-    "dotenv": "^6.2.0"
+    "watson-developer-cloud": "^3.15.1"
+  },
+  "engines": {
+    "node": "8.15.1",
+    "npm": "6.4.1"
   }
 }
