@@ -72,7 +72,7 @@ reconstruirIntencoesEntidadesContexto = (watsonObject) => new Promise((resolve, 
                         // Caso ache, eu coloco na lista de contexto items e adiciono o nome do produto na mensagem de usuário.
                         else {
                             // Se eu tenho uma lista, adiciono a ela, se a lista não existe, crio ela.
-                            watsonObject.context.hasOwnProperty("itens") && watsonObject.context.itens != '' ? response.context.itens.push(data[0]) : response.context.itens = [data[0]];
+                            watsonObject.context.hasOwnProperty("itens") && watsonObject.context.itens != '' ? watsonObject.context.itens.push(data[0]) : watsonObject.context.itens = [data[0]];
                             watsonObject.output.text[0] += ` ${data[0].name}, `; // Adicionando nome do produto na mensagem.
                             resolve(watsonObject); //Return da promisse
                         }
