@@ -5,30 +5,30 @@ Projeto para construção de backend do curso de chatbots
 
 Vamos primeiramente instalar o [nvm](https://github.com/nvm-sh/nvm) (Node version managem) usando CURL para instalarmos uma versão do nodejs juntamente com o [npm]() (Node package manager):
 
-```
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+```shell
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 ```
 
 Após instalar o nvm, vamos instalar o NodeJS:
 
-```
-nvm install v8.15.1
+```shell
+$ nvm install v8.15.1
 ```
 
 ### Inicializando projeto
 
 Após iniciar um projeto pelo git, dentro da pasta de nosso projeto, vamos iniciar o package.json usando o comando:
 
-```
-npm init -y
+```shell
+$ npm init -y
 ```
 
 ### Instalando dependencias
 
 Vamos instalar as dependências do nosso projeto com o comando:
 
-```
-npm install body-parser@1.15.2 dotenv@6.2.0 express@4.14.0 express-query-int@1.0.1 mongoose@4.7.0 node-restful@0.2.5 nodemon@1.11.0 pm2@2.1.5 watson-developer-cloud@3.15.1 --save
+```shell
+$ npm install body-parser@1.15.2 dotenv@6.2.0 express@4.14.0 express-query-int@1.0.1 mongoose@4.7.0 node-restful@0.2.5 nodemon@1.11.0 pm2@2.1.5 watson-developer-cloud@3.15.1 --save
 ```
 
 Onde:
@@ -48,7 +48,7 @@ Em nosso `package.json`, vamos criar scripts para realizar a execução de nosso
 
 Em `"scripts"` vamos criar nossos comandos para rodar os serviços:
 
-```
+```js
 "scripts": {
     "dev": "nodemon",
     "production": "pm2 start src/loader.js --name chat_api",
@@ -60,7 +60,7 @@ Em `"scripts"` vamos criar nossos comandos para rodar os serviços:
 
 Vamos referênciar o arquivo onde o `nodemon` deve buscar a entrada (primeiro arquivo a ser executado, a entrada da nossa aplicação), no parâmetro `"main"`:
 
-```
+```js
 "main": "src/loader.js",
 ```
 
@@ -68,7 +68,7 @@ Vamos referênciar o arquivo onde o `nodemon` deve buscar a entrada (primeiro ar
 
 Também vamos definir as versões que estamos utilizando do `NodeJS` e `npm` no parâmetro `"engines"`:
 
-```
+```js
 "engines": {
     "node": "8.15.1",
     "npm": "6.4.1"
@@ -77,7 +77,7 @@ Também vamos definir as versões que estamos utilizando do `NodeJS` e `npm` no 
 
 Nosso `package.json` final deverá ficar assim:
 
-```
+```js
 {
   "name": "backend",
   "version": "1.0.0",
@@ -123,8 +123,8 @@ node_modules
 
 Ao baixar nosso projeto novamente, podemos recuperar as dependencias de `node_modules` utilizando o comando:
 
-```
-npm i
+```shell
+$ npm i
 ```
 
 Ele irá utilizar o arquivo `package.json` para identificar e baixar as dependências.
@@ -148,7 +148,7 @@ Com isso basta copiarmos o arquivo de exemplo, renomearmos ele para `.env` e pre
 
 Dentro do nosso arquivo em `src/loader.js` teremos 3 entradas:
 
-```
+```js
 const server = require('./config/server')
 require('./config/database')
 require('./config/routes')(server) 
@@ -164,7 +164,7 @@ Vamos criar um middleware chamado de `cors` em `src/config/cors.js`. Ele será r
 
 O final (`src/config/cors.js`) ficará assim:
 
-```
+```js
 module.exports = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
@@ -187,7 +187,7 @@ Aqui é onde iniciamos o servidor que terá as rotas para acesso a aplicação. 
 
 Primeiro vamos criar um objeto que terá as informações de inicialização da conexão do servidor (endereço e porta). Vamos rodar o serviço em rede local (`localhost`) e vamos usar 2 confirações na porta.
 
-```
+```js
 const options = {
     host: "localhost",
     port: process.env.PORT || 3003
@@ -198,7 +198,7 @@ Se a variável de ambiente `PORT` não estiver definida, o operador OU (`||`) fo
 
 Depois vamos referenciar todas as bibliotecas que utilizaremos como middlewares do nosso servidor, assim como a própria biblioteca do servidor (`express`). Inclusive o `cors.js` que é um middleware que nós mesmo criamos:
 
-```
+```js
 const bodyParser = require('body-parser')
 const express = require('express')
 const allowCors = require('./cors')
@@ -207,7 +207,7 @@ const queryParser = require('express-query-int')
 
 Agora criamos a instancia inicial do nosso servidor utilizando a constante `express`:
 
-```
+```js
 const server = express()
 ```
 
@@ -215,7 +215,7 @@ Agora nos aplicamos os middlewares ao nosso servidor usando a função `use()` d
 
 Por exemplo, nosso `cors` retorna uma função, então simplesmente passamos sua constante.
 
-```
+```js
 server.use(bodyParser.urlencoded({ extended: true })) 
 server.use(bodyParser.json()) 
 server.use(allowCors) 
@@ -224,7 +224,7 @@ server.use(queryParser())
 
 Após todas as configurações vamos iniciar o servidor usando o método `listen()` do express. Para ele passando a constante `options` com as configurações de IP e porta que definimos para nosso serviço, por fim, o segundo parametro é uma `callback anônima` que ele retorna com informações de sucesso ou não do nosso servidor. assim passamos uma mensagem via console para confirmar nosso serviço rodando naquele `IP:Porta`:
 
-```
+```js
 server.listen(options, function(){
     console.log(`Backend está rodando em http://${options.host}:${options.port}/`);
 })
@@ -232,13 +232,13 @@ server.listen(options, function(){
 
 Por fim, exportamos nosso objeto do servidor (`server`) instanciado utilizando o `module.exports` para que outros arquivos possam utilizá-lo:
 
-```
+```js
 module.exports = server
 ```
 
 Nosso arquivo final (`src/config/server.js`) ficará assim:
 
-```
+```js
 const options = {
     host: "localhost",
     port: process.env.PORT || 3003
@@ -270,37 +270,37 @@ Vamos agora criar uma conexão com nosso banco de dados MongoDB.
 
 Primeiro obtemos as variáveis de ambiente (do arquivo `.env`) que simulamos que podemos definir conexões de banco nela (URI, User, Senha).
 
-```
+```js
 require('dotenv').config()
 ```
 
 Agora vamos referenciar a biblioteca do MongoDB utilizando o mongoose:
 
-```
+```js
 const mongoose = require('mongoose')
 ```
 
 Criamos uma promise global para que nosso banco de dados possa ser chamado de qualquer lugar da nossa aplicação:
 
-```
+```js
 mongoose.Promise = global.Promise
 ```
 
 Definimos uma uri para nosso banco de dados utilizando o operador OU (`||`) novamente. Se existir a variavel de ambiente `MONGODB_URI` a utilizamos, caso contrário usamos o valor padrão `mongodb://localhost/loja_de_roupas`, que utiliza o banco local como database usando o nome `loja_de_roupas`:
 
-```
+```js
 const uri = process.env.MONGODB_URI || 'mongodb://localhost/loja_de_roupas'
 ```
 
 Por fim, iniciamos a conexão. A exportação é opcional, somente se quiser obter algum detalhe sobre a conexão:
 
-```
+```js
 module.exports = mongoose.connect(uri, {useMongoClient: true})
 ```
 
 Nosso arquivo final (`src/config/database.js`) ficará assim:
 
-```
+```js
 require('dotenv').config()
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
@@ -320,14 +320,14 @@ Vamos utilizar o `mongoose` para gerar os `schemas` de objetos. Isso permite que
 
 Primeiramente obtemos a instancia do node-restful, e obtemos o modelo do esquema de mongoose que se encontra dentro dele, e colocamos no arquivo `src/api/produtos/produtos.js`:
 
-```
+```js
 const restful = require('node-restful')
 const mongoose = restful.mongoose
 ```
 
 Depois instanciamos modelo de `mongoose.Schema` no qual passamos um objeto que será o nosso modelo, juntamente com o que será validado nele:
 
-```
+```js
 const produtosSchema = new mongoose.Schema({
     name: { type: String, required: true },
     imgUrl: { type: String, required: true },
@@ -343,13 +343,13 @@ Sendo:
 
 Por fim, exportamos essa constante criada (`produtosSchema`) como um model restful, e damos um nome ao modelo como `'Produtos'`:
 
-```
+```js
 module.exports = restful.model('Produtos', produtosSchema)
 ```
 
 Nosso arquivo final (`src/api/produtos/produtos.js`) ficará assim:
 
-```
+```js
 const restful = require('node-restful')
 const mongoose = restful.mongoose
 
@@ -368,13 +368,13 @@ Depois de criar nosso model restful em `src/api/produtos/produtos.js`, vamos uti
 
 Primeiro vamos importar nosso modelo do arquivo criado (`src/api/produtos/produtos.js`) no arquivo `src/api/produtos/produtosService.js`:
 
-```
+```js
 const produtos = require('./produtos')
 ```
 
 Assim informamos quais rotas queremos gerar para esse `model`, utilizando a função `methods()` que vem do node-restful, que veio dentro dessa constante `produtos`:
 
-```
+```js
 produtos.methods(['get', 'post', 'put', 'delete'])
 ```
 
@@ -388,7 +388,7 @@ Para mais detalhes do que cada requisição pode fazer, visite [aqui](https://gi
 
 Depois atualizamos as opções do nosso modelo rest utilizando a função `updateOptions()`:
 
-```
+```js
 produtos.updateOptions({new: true, runValidators: true})
 ```
 
@@ -400,13 +400,13 @@ Sendo as opções passadas por um objeto para ele:
 
 Por fim, exportamos nosso modelo atualizado:
 
-```
+```js
 module.exports = produtos
 ```
 
 Nosso arquivo final (`src/api/produtos/produtosService.js`) ficará assim:
 
-```
+```js
 const produtos = require('./produtos')
 
 produtos.methods(['get', 'post', 'put', 'delete']) 
@@ -421,14 +421,14 @@ Novamente vamos utilizar o `mongoose` para gerar os `schemas` de objetos. Isso p
 
 Primeiramente obtemos a instancia do node-restful, e obtemos o modelo do esquema de mongoose que se encontra dentro dele, e colocamos no arquivo `src/api/chat/chat.js`:
 
-```
+```js
 const restful = require('node-restful')
 const mongoose = restful.mongoose
 ```
 
 Depois instanciamos modelo de `mongoose.Schema` no qual passamos um objeto que será o nosso modelo, juntamente com o que será validado nele. Neste caso teremos dois modelos, um que representa a conversa do usuario, e dentro dele uma lista de mensagens, que também tem uma estrutura própria:
 
-```
+```js
 const messageSchema = new mongoose.Schema({
     message: { type: String, required: true },
     base: { type: String, default: 'sent' },
@@ -460,13 +460,13 @@ E no `chatSchema`:
 
 Por fim, exportamos a constante criada (`messageSchema`) como um model restful, e damos um nome ao modelo como `'Chat'`:
 
-```
+```js
 module.exports = restful.model('Chat', chatSchema)
 ```
 
 Nosso arquivo final (`src/api/chat/chat.js`) ficará assim:
 
-```
+```js
 const restful = require('node-restful')
 const mongoose = restful.mongoose
 
@@ -493,13 +493,13 @@ Depois de criar nosso model restful em `src/api/chat/chat.js`, vamos utilzar nov
 
 Primeiro vamos importar nosso modelo do arquivo criado (`src/api/chat/chat.js`) no arquivo `src/api/chat/chatService.js`:
 
-```
+```js
 const chat = require('./chat')
 ```
 
 Assim informamos quais rotas queremos gerar para esse `model`, utilizando a função `methods()` que vem do node-restful, que veio dentro dessa constante `chat`:
 
-```
+```js
 chat.methods(['get', 'post', 'put', 'delete'])
 ```
 
@@ -511,7 +511,7 @@ Lembrando:
 
 Depois atualizamos as opções do nosso modelo rest utilizando a função `updateOptions()`:
 
-```
+```js
 chat.updateOptions({new: true, runValidators: true})
 ```
 
@@ -523,13 +523,13 @@ Sendo as opções passadas por um objeto para ele:
 
 Por fim, exportamos nosso modelo atualizado:
 
-```
+```js
 module.exports = chat
 ```
 
 Nosso arquivo final (`src/api/chat/chatService.js`) ficará assim:
 
-```
+```js
 const chat = require('./chat')
 
 chat.methods(['get', 'post', 'put', 'delete'])
@@ -546,7 +546,7 @@ Para isso, vamos ao terceiro arquivo que foi está sendo usado em `src/loader.js
 
 Primeiramente vamos importar a biblioteca `express` em `src/config/routes.js` que é a principal para criar os serviços de uma API e todas as bibliotecas que criamos que vamos precisar (`chatService` e `produtosService`):
 
-```
+```js
 const express = require('express')
 const chatService = require('../api/chat/chatService') 
 const produtosService = require('../api/produtos/produtosService') 
@@ -554,19 +554,19 @@ const produtosService = require('../api/produtos/produtosService')
 
 Como nosso módulo recebe a instância que está rodando do express de `src/config/server.js` precisamos criar um export que recebe essa instância por parâmetro como uma função:
 
-```
+```js
 module.exports = function (server) {
 ```
 
 Agora dentro desta função, vamos garantir que todas as rotas tenham uma URL inicial igual, utilizando o `express.Router()` para garantir isso. Vamos criar uma instância desse Router:
 
-```
+```js
 const api = express.Router()
 ```
 
 Agora passamos para nosso `server` que foi recebido por parâmetro, a string que representará todas as rotas por começo usando a nova constante `api`:
 
-```
+```js
 server.use('/api', api)
 ```
 
@@ -574,7 +574,7 @@ Agora sempre que definimos alguma nova rota usando a constante `api`, nosso serv
 
 Por fim vamos pegar o `chatService` e `produtosService` que são models rest, e usar seu `register` para criar os 4 métodos (`GET`, `POST`, `PUT`, `DELETE`) dentro de `api`:
 
-```
+```js
 chatService.register(api, '/chat')
 produtosService.register(api, '/produtos')
 }
@@ -584,7 +584,7 @@ Agora temos um `CRUD` de acesso aos `produtos` pela url `http://localhost:3003/a
 
 Nosso arquivo final (`src/config/routes.js`) ficará assim:
 
-```
+```js
 const express = require('express') 
 const chatService = require('../api/chat/chatService')
 const produtosService = require('../api/produtos/produtosService')
@@ -609,17 +609,17 @@ Vamos criar um arquivo em `src/api/chatBot/chatBot.js` que irá representar isto
 
 Primeiramente, em `src/api/chatBot/chatBot.js` vamos importar a biblioteca `dotenv` das variáveis de ambiente e a da `watson`. A instancia inicial da watson, depende de segredos da API que ela nos disponíbiliza em sua Skill, então vamos criar variáveis dentro arquivo `.env` na raiz do nosso projeto para que essa API possa as utilizar.
 
-```
+```js
 require('dotenv').config()
-const watson = require('watson-developer-cloud')
+const AssistantV1 = require('ibm-watson/assistant/v1');
 const chatService = require('../chat/chatService')
 const produtosService = require('../produtos/produtosService')
 ```
 
 Agora, criamos uma instância para o serviço da watson, utilizando o `watson.AssistantV1` que vem da biblioteca do watson, passando os segredos que serão definidos em `.env`, no caso de testes de desenvolvimento:
 
-```
-const assistant = new watson.AssistantV1({
+```js
+const assistant = new AssistantV1({
     username: process.env.WATSON_USERNAME,
     password: process.env.WATSON_PASSWORD,
     url: process.env.WATSON_URL,
@@ -637,7 +637,7 @@ Agora quando quisermos enviar uma pergunta para a watson resolver utilizando sua
 
 Vamos criar uma função que retorna uma `promise` que ficará responsável de ver se já existe uma conversa para uma sessão. ela receberá como parametro um objeto deste modelo:
 
-```
+```js
 {
     session_id: req.body.session_id,
     message: {
@@ -655,7 +655,7 @@ Onde:
 
 Agora em `src/api/chatBot/chatBot.js` vamos começar a desenvolver essa função fazendo sua entrada, o objeto usado no exemplo acima será representado pela variável `input`:
 
-```
+```js
 iniciarOuContinuarConversa = (input) => new Promise((resolve, reject) => {
 ```
 
@@ -663,13 +663,13 @@ Essa promisse para que seja finalizada, precisa retornar com a função `resolve
 
 Primeiramente, dentro da função, vamos utilizar o `find` do `mongoose` para verificar se a `input.session_id` já existe dentro do banco `chatService`:
 
-```
+```js
 chatService.find({ session_id: input.session_id }, (err, data) => {
 ```
 
 Se ele encontrar algo, ele nos retorna na variável `data`. Se ocorrer algum problema ele nos retorna em err, então vamos fazer algumas verificações dentro da função `find`. Se não existir ainda uma conversa (tirer `erro` na busca, tamanho dos dados retornados forem `0` ou `indefindos`), nós criamos um novo objeto que será criado no banco posteriormente com uma nova session_id usando a variável `_id` que o mongoose cria para nós (é um valor unico, perfeito para usar como sessão) e por fim o retornamos. Caso já exista, nós simplesmente pegamos o primeiro objeto que foi encontrado pelo `find` no banco, e limpamos a antiga entrada do usuário nele, depois retornamos pelo `resolve(objeto)`.
 
-```
+```js
     if (err || data.length == 0 || data == undefined) {
         let chat = new chatService({
             input: input.message || undefined,
@@ -687,7 +687,7 @@ Se ele encontrar algo, ele nos retorna na variável `data`. Se ocorrer algum pro
 
 Nossa função final `iniciarOuContinuarConversa(input)` dentro de `src/api/chatBot/chatBot.js` ficará assim:
 
-```
+```js
 iniciarOuContinuarConversa = (input) => new Promise((resolve, reject) => {
     chatService.find({ session_id: input.session_id }, (err, data) => {
         if (err || data.length == 0 || data == undefined) {
@@ -715,7 +715,7 @@ Essa é a principal função do nosso serviço. Ela será responsável, por exem
 
 Depois da função `iniciarOuContinuarConversa(input)`, vamos criar uma nova entrada para uma nova função, que terá o nome de `reconstruirIntencoesEntidadesContexto(watsonObject)`. Igual a função anteriormente, esta também irá depender de uma `promise` para ser resolvida. esta receberá a resposta que o watson nos enviar para sofrer adaptações.
 
-```
+```js
 reconstruirIntencoesEntidadesContexto = (watsonObject) => new Promise((resolve, reject) => {
 ```
 
@@ -723,13 +723,13 @@ reconstruirIntencoesEntidadesContexto = (watsonObject) => new Promise((resolve, 
 
 Primeiro vamos buscar pela intenção de comprar:
 
-```
+```js
     if (watsonObject.intents.length > 0 && watsonObject.intents[0].intent == 'Comprar') {
 ```
 
 Na primeira linha desse if vamos criar uma lista, onde poderá conter várias `promises`:
 
-```
+```js
         allSearchs = []
 ```
 
@@ -737,7 +737,7 @@ Isso vai permitir que possamos realizar varias operações e somente permitir qu
 
 Depois, vamos buscar todas as entidades que o usuário pode estar buscando (possíveis produtos). vamos usar um loop para fazer a varredura em entities:
 
-```
+```js
         for (let index = 0; index < watsonObject.entities.length; index++) {
             if (watsonObject.entities[index].entity == 'produto') {
                 let search;
@@ -760,7 +760,7 @@ Como agora em search temos um nome completo para busca (como `camisa verde`) bas
 
 Como o `find` do `mongoose`, nos retorna uma `promise`, por isso vamos forçá-lo a fazer parte da nossa lista de promises em `allSearchs`:
 
-```
+```js
         allSearchs.push(new Promise((resolve, reject) => {
             ProdutosService.find({ "name": { "$regex": search.trim(), "$options": "i" } }, (err, data) => {         
                 if (err || data.length == 0 || data == undefined) {
@@ -781,7 +781,7 @@ O caso acima é o seguinte: se não exitir um produto buscado no banco `produtos
 
 Por fim, ainda dentro do if da intenção `#comprar`, esperamos todas as promises finalizarem dentro de `allSearchs` antes de finalizar a chamada, utilizando o `Promise.all()`, que verifica se toda aquela lista de promises foi finalizada. ai usamos o then como validação disso:
 
-```
+```js
 Promise.all(allSearchs).then((res) => {
     resolve(watsonObject);
 });
@@ -791,7 +791,7 @@ Promise.all(allSearchs).then((res) => {
 
 Depois, podemos analisar outra intenção, usando um `else if` ligado a inteção de `#comprar`. A intenção agora será `#ver_carrinho`:
 
-```
+```js
 else if (watsonObject.intents.length > 0 && watsonObject.intents[0].intent == 'ver_carrinho') {
         if (watsonObject.context.hasOwnProperty("itens") && watsonObject.context.itens != '') {
             watsonObject.output.text[0] += ` Eles são: ${watsonObject.context.itens.map(item => item.name).join(', ')}`;
@@ -806,7 +806,7 @@ A comparação de cima simplesmente vai pegar o nome de todos os produtos (objet
 
 Vamos analisar mais uma intenção, agora, depois de `#ver_carrinho` vamos analisar a intenção `#remover_carrinho`:
 
-```
+```js
     else if (watsonObject.intents.length > 0 && watsonObject.intents[0].intent == 'remover_carrinho') {
         let tem_numero = false;
         if (watsonObject.context.hasOwnProperty("itens") && watsonObject.context.itens != '') {
@@ -833,7 +833,7 @@ Aqui nos verificamos se o usuário entrou com algum número junto com essa inten
 
 Com isso finalizamos todas as intenções que precisamos modificar a nosso gosto do retorno da `watson`. Não podemos esquecer de fazer um `else` final retornando o objeto original caso não haja modificações:
 
-```
+```js
     else {
         resolve(watsonObject);
     }
@@ -841,7 +841,7 @@ Com isso finalizamos todas as intenções que precisamos modificar a nosso gosto
 
 Por fim, nossa função `reconstruirIntencoesEntidadesContexto(watsonObject)` ficará assim:
 
-```
+```js
 reconstruirIntencoesEntidadesContexto = (watsonObject) => new Promise((resolve, reject) => {
 
     if (watsonObject.intents.length > 0 && watsonObject.intents[0].intent == 'Comprar') {
@@ -928,19 +928,19 @@ Essa é a função que interliga as anteriores criadas e que realiza achamada pa
 
 Primeiro vamos definir o inicio da função, que também será uma `promise`:
 
-```
+```js
 module.exports.analisarConstruirMensagem = (input) => new Promise((resolve, reject) => {
 ```
 
 Com isso, simplesmente pegamos o objeto de entrada (`input`) e o repassamos para nossa função `iniciarOuContinuarConversa(input)`, que retornará o objeto do banco do usuário, ou criará um e retornará o novo objeto para nós. Com isso usamos o `.then()` para esperar a promise ser resolvida, que nós retornará esse objeto novo pela variável `user` no qual foi definida:
 
-```
+```js
     iniciarOuContinuarConversa(input).then((user) => {
 ```
 
 agora pegamos esse objeto retornado e a variavel de ambiente de WORKSPACE da skill, e construimos a chamada para a `watson`, usando a constante criada bem no começo dessa parte, chamada de `assistant`:
 
-```
+```js
         assistant.message({
             workspace_id: process.env.WATSON_WORKSPACE_ID,
             session_id: user.session_id,
@@ -952,7 +952,7 @@ agora pegamos esse objeto retornado e a variavel de ambiente de WORKSPACE da ski
 
 Vamos verificar se a resposta ocorrer tudo certo pelas variável de retorno `err` e `res`. Se ouve erro simplesmente rejeitamos:
 
-```
+```js
                 if (err) {
                     reject(err);
                 }
@@ -960,7 +960,7 @@ Vamos verificar se a resposta ocorrer tudo certo pelas variável de retorno `err
 
 Caso contrário, chamamos a outra função que criamos: `reconstruirIntencoesEntidadesContexto(res)`. Ela ira receber o objeto que o watson retornou, e fazer as adaptações que definimos. Por fim, ela retorna o watsonObject modificado por nós através da resolução da promise (método `.then()`):
 
-```
+```js
                 else {
                     reconstruirIntencoesEntidadesContexto(res).then((resp) => { 
 ```
@@ -969,7 +969,7 @@ Após tudo ser adaptado, precisamos colocar essa conversa no objeto `user`, que 
 
 Primeiro adicionamos a mensagem que foi enviada pelo usuário:
 
-```
+```js
                         user.messages.push({
                             message: input.message.text
                         });
@@ -977,7 +977,7 @@ Primeiro adicionamos a mensagem que foi enviada pelo usuário:
 
 Segundo adicionamos as mensagens de resposta que foram recebidas e adaptadas da watson:
 
-```
+```js
                         resp.output.text.forEach(message => {
                             user.messages.push({
                                 message: message,
@@ -988,13 +988,13 @@ Segundo adicionamos as mensagens de resposta que foram recebidas e adaptadas da 
 
 Por ultimo, atualizamos o contexto do objeto user:
 
-```
+```js
                         user.context = resp.context;
 ```
 
 E finalmente resolvemos a promise de `analisarConstruirMensagem(input)` resolvendo a promise retornando o novo objeto user com todas as mensagens devidamente respondidas.
 
-```
+```js
                         resolve(user);
 ```
 
@@ -1002,7 +1002,7 @@ Ou seja, esse arquivo é responsável por toda a metodologia de conversas de nos
 
 Nosso arquivo final (`src/api/chatBot/chatBot.js`) ficará assim:
 
-```
+```js
 require('dotenv').config()
 const watson = require('watson-developer-cloud');
 const chatService = require('../chat/chatService')
@@ -1156,13 +1156,13 @@ Após criarmos todo o serviço de comunicação da watson, precisamos fazer uma 
 
 Vamos voltar ao arquivo `src/config/routes.js` e adicionar a nova bilioteca que criamos no começo do arquivo:
 
-```
+```js
 const chatBot = require('../api/chatBot/chatBot')
 ```
 
 Agora, dentro da função exportada anonimamente, vamos criar essa nova rota, usando ainda a constante `api` para que nossa rota tenha a url prévida de `http://localhost:3003/api`. Como ela será um POST, fazemos da seguinte forma:
 
-```
+```js
     api.post('/chat', (req, res) => {
 ```
 
@@ -1170,7 +1170,7 @@ para que a requisição funcione, o usuário precisa enviar pelo menos um `JSON`
 
 Então, primeiramente verificamos se a `req` (requisição feita pelo usuário) tem em seu corpo (`body`) uma `message`:
 
-```
+```js
         if (!req.body.message) {
             res.status(403).send({ errors: ['No message provided.'] })
             return;
@@ -1181,7 +1181,7 @@ Se não existir, retornamos ao usuário um status 403 (`forbidden`) juntamente c
 
 Caso contrário, exista essas informações, nós chamaos o método que criamos, que veio da constante `chatBot`, na qual importamos no começo deste tópico, passamos pra ele a sessão e a mensagem. Se não existir a `session_id` tudo bem, isso foi validado dentro da função `analisarConstruirMensagem()`.
 
-```
+```js
         chatBot.analisarConstruirMensagem({
             session_id: req.body.session_id,
             message: {
@@ -1192,7 +1192,7 @@ Caso contrário, exista essas informações, nós chamaos o método que criamos,
 
 Como ela é uma `promise` precisamos usar o método `.then()` para aguardar sua resposta. Ela nos retornará o objeto user com tudo já feito (Como você viu anteriormente). simplesmente salvamos o objeto novo no banco de dados, e retornamos o status 201 (`created`) como resposta ao usuário juntamente com o objeto user em formato `JSON`, com todas as informações:
 
-```
+```js
             .then((user) => {
 
                 user.save((err) => {
@@ -1208,7 +1208,7 @@ Como ela é uma `promise` precisamos usar o método `.then()` para aguardar sua 
 
 Após essa adaptação. Nosso novo arquivo final (`src/config/routes.js`) ficará assim:
 
-```
+```js
 const express = require('express')
 const chatBot = require('../api/chatBot/chatBot')
 const chatService = require('../api/chat/chatService')
@@ -1254,7 +1254,7 @@ module.exports = function (server) {
 ## Finalização
 Com isso temos todo nosso serviço pronto para chamadas. Basta rodar o serviço:
 
-```
+```shell
 $ npm run dev
 ```
 
