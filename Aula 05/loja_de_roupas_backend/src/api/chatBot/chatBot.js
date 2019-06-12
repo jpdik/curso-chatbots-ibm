@@ -1,5 +1,5 @@
 require('dotenv').config() //Obtem as variáveis de ambiente do arquivo '.env'
-var AssistantV1 = require('ibm-watson/assistant/v1');
+const AssistantV1 = require('ibm-watson/assistant/v1');
 const chatService = require('../chat/chatService')
 const produtosService = require('../produtos/produtosService')
 
@@ -31,7 +31,7 @@ iniciarOuContinuarConversa = (input) => new Promise((resolve, reject) => {
         else { // Se existir, retorna a conversa encontrada usando o resolve
             chat = data[0];
             chat.input = input.message || undefined,
-            resolve(chat);
+                resolve(chat);
         }
     })
 });
@@ -102,8 +102,9 @@ reconstruirIntencoesEntidadesContexto = (watsonObject) => new Promise((resolve, 
                 if (entity.entity == 'sys-number') {
                     let pos = parseInt(entity.value);
                     // Removo do carrinho, a posição informada pelo usuário
-                    watsonObject.context.itens.splice(pos-1, 1);
-                    tem_numero = true;                }
+                    watsonObject.context.itens.splice(pos - 1, 1);
+                    tem_numero = true;
+                }
             });
         }
         else {
@@ -131,34 +132,32 @@ module.exports.analisarConstruirMensagem = (input) => new Promise((resolve, reje
             context: user.context,
             input: user.input
         })
-        .then((err, res) => { // checo os erros e resposta do watson
-                // Se tiver algum erro, simplesmente falho a promisse
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    reconstruirIntencoesEntidadesContexto(res).then((resp) => { 
+            .then((res) => { // checo os erros e resposta do watson
+                reconstruirIntencoesEntidadesContexto(res).then((resp) => {
                     // se tiver ok passo para o reconstruirIntencoesEntidadesContexto fazer as devidas alterações e retornar uma nova resposta (resp)
 
-                        //Adiciono a nova mensagem do usuário no objeto do banco user
-                        user.messages.push({
-                            message: input.message.text
-                        });
-
-                        resp.output.text.forEach(message => {
-                            //adicionando uma mensagem na lista.
-                            user.messages.push({
-                                message: message,
-                                base: 'received'
-                            });
-                        });
-
-                        // Armazeno o fluxo de contexto da conversação que foi obtida como respota do watson na sessão do usuário.
-                        user.context = resp.context;
-
-                        resolve(user); // retorno o objeto usuário e o objeto de resposta do watson.
+                    //Adiciono a nova mensagem do usuário no objeto do banco user
+                    user.messages.push({
+                        message: input.message.text
                     });
-                }
-        });
+
+                    resp.output.text.forEach(message => {
+                        //adicionando uma mensagem na lista.
+                        user.messages.push({
+                            message: message,
+                            base: 'received'
+                        });
+                    });
+
+                    // Armazeno o fluxo de contexto da conversação que foi obtida como respota do watson na sessão do usuário.
+                    user.context = resp.context;
+
+                    resolve(user); // retorno o objeto usuário e o objeto de resposta do watson.
+                });
+
+            }).catch((err) => {
+                console.log(err);
+                reject(err);
+            });
     })
 });
