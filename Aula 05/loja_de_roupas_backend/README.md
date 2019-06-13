@@ -1258,6 +1258,204 @@ Com isso temos todo nosso serviço pronto para chamadas. Basta rodar o serviço:
 $ npm run dev
 ```
 
+## Fazendo deploy do backend
+
+
+#### Inicializando projeto caso não exista
+
+De preferência, nosso projeto já precisa estar em um repositório. Caso não esteja, basta usar o comando:
+
+```shell
+$ npm init
+```
+
+Isso já permitirá que façamos envio do projeto para o heroku, que será o local de deploy que iremos utilizar.
+
+#### Instalando e logando no heroku
+
+Vamos instalar o cliente do heroku pelo próprio NPM:
+
+```shell
+$ npm install -g heroku
+```
+
+Após a instalação, vamos logar utilizando o comando:
+
+```shell
+$ heroku login
+```
+
+Ele irá abrir o navegador para poder realizar o login.
+
+#### Criando um serviço no heroku
+
+Para criarmos o serviço, basta rodarmos o comando abaixo, passando o nome que queremos que nossa URL tenha:
+
+```shell
+$ heroku create <nome_para_o_deploy>
+```
+
+Exemplo:
+
+```shell
+$ heroku create lojajp-backend
+```
+
+Com isso, teremos a url: [https://`lojajp-backend`.herokuapp.com/](https://lojajp-backend.herokuapp.com/) para acesso ao serviço.
+
+#### Escolhendo o serviço que será utilizado
+
+Estamos utilizando o NodeJS. Então, para setá-lo ao nosso projeto, utilizamos:
+
+```shell
+$ heroku buildpacks:set heroku/nodejs
+```
+
+#### Setando o projeto remoto que será utilizado pelo git
+
+Para realizar isso, utlize o comando:
+
+```shell
+$ heroku git:remote -a <nome_para_o_deploy>
+```
+
+Utilizando o nome que foi definido anteriormente.
+
+**Obs**: se já estiver dentro de um git e ter rodado o comando create. provavelmente esse passo já terá setado pelo comando.
+
+#### Setando as variáveis de ambiente
+
+Vamos pegar cada linha do nosso arquivo `.env` e utilizar o comando:
+
+```shell
+$ heroku config:set VARIAVEL_AMBIENTE="VALOR"
+```
+
+exemplo:
+```shell
+$ heroku config:set WATSON_VERSION="2019-04-17"
+```
+
+**Obs**: O valor ter que ser passado entre aspas para evitar que haja conflitos com o console (espaços, traços, simbolos, etc.).
+
+#### Definindo engines e script de inicialização no `package.json`
+
+Vamos criar o script start, que é o que heroku usa para iniciar nosso serviço em produção. Também iremos informar qual versão do NodeJS e do NPM que iremos utilizar.
+
+Vamos adicionar as seguintes linhas no arquivo `package.json`:
+
+```diff
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/loader.js",
+  "scripts": {
++    "start": "node src/loader.js",
+    "dev": "nodemon",
+    "production": "pm2 start src/loader.js --name chat_api",
+    "production-stop": "pm2 stop chat_api"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "dotenv": "^6.2.0",
+    "express": "^4.14.0",
+    "express-query-int": "^1.0.1",
+    "ibm-watson": "^4.1.3",
+    "mongoose": "^4.7.0",
+    "node-restful": "^0.2.5",
+    "nodemon": "^1.11.0",
+    "pm2": "^2.1.5"
+  },
++  "engines": {
++    "node": "8.15.1",
++    "npm": "6.4.1"
++  }
+}
+```
+
+Ficará assim:
+
+```js
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/loader.js",
+  "scripts": {
+    "start": "node src/loader.js",
+    "dev": "nodemon",
+    "production": "pm2 start src/loader.js --name chat_api",
+    "production-stop": "pm2 stop chat_api"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "dotenv": "^6.2.0",
+    "express": "^4.14.0",
+    "express-query-int": "^1.0.1",
+    "ibm-watson": "^4.1.3",
+    "mongoose": "^4.7.0",
+    "node-restful": "^0.2.5",
+    "nodemon": "^1.11.0",
+    "pm2": "^2.1.5"
+  },
+  "engines": {
+    "node": "8.15.1",
+    "npm": "6.4.1"
+  }
+}
+```
+
+Com isso o heroku já saberá como instalar todas nossas dependências, qual versão utilizar, e como iniciar o serviço.
+
+#### Enviando todo o serviço para o heroku para o deploy
+
+Para fazer isto, basta realizar os 3 passos simples de um commit.
+
+Adicionar todos os arquivos do projeto para o commit:
+
+```shell
+$ git add .
+```
+
+Dar um texto de referência ao que está sendo realizado neste commit:
+
+```shell
+$ git commit -m "deploy da versão x"
+```
+
+Por fim, basta enviá-lo para o heroku com o comando push:
+
+```shell
+$ git push heroku master
+```
+
+Se tudo ocorrer corretamente, no final deste comando terá algo do tipo:
+
+```shell
+...
+remote:        Released v28
+remote:        https://lojajp-backend.herokuapp.com/ deployed to Heroku
+remote: 
+remote: Verifying deploy... done.
+To https://git.heroku.com/lojajp-backend.git
+   8293bba..d758e58  master -> master
+```
+
+No exemplo acima, o servidor estará rodando em [https://lojajp-backend.herokuapp.com/](https://lojajp-backend.herokuapp.com/).
+
+Caso ocorra algum erro você pode analisá-lo pelo comando:
+
+```shell
+$ heroku logs --tail
+```
+
 ## Créditos
 
 Criado por: [João Paulo de Melo](https://www.jpmdik.com.br/)

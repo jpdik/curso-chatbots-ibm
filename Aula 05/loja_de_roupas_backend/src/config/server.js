@@ -1,5 +1,5 @@
 const options = {
-    host: "localhost",
+    host: process.env.PORT ? "0.0.0.0" : "localhost",
     port: process.env.PORT || 3003
 };
 
