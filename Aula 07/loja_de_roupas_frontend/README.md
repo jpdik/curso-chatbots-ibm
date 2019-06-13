@@ -1110,6 +1110,243 @@ Com isso temos todo nosso serviço frontend pronto para exibir e fazer chamadas 
 $ npm run dev
 ```
 
+## Fazendo deploy do backend
+
+
+#### Inicializando projeto caso não exista
+
+De preferência, nosso projeto já precisa estar em um repositório. Caso não esteja, basta usar o comando:
+
+```shell
+$ npm init
+```
+
+Isso já permitirá que façamos envio do projeto para o heroku, que será o local de deploy que iremos utilizar.
+
+#### Instalando e logando no heroku
+
+Caso não tenha instalado, vamos instalar o cliente do heroku pelo próprio NPM:
+
+```shell
+$ npm install -g heroku
+```
+
+Após a instalação, se ainda não estiver logado, vamos logar utilizando o comando:
+
+```shell
+$ heroku login
+```
+
+Ele irá abrir o navegador para poder realizar o login.
+
+#### Criando um serviço no heroku
+
+Para criarmos o serviço, basta rodarmos o comando abaixo, passando o nome que queremos que nossa URL tenha:
+
+```shell
+$ heroku create <nome_para_o_deploy>
+```
+
+Exemplo:
+
+```shell
+$ heroku create lojajp-frontend
+```
+
+Com isso, teremos a url: [https://`lojajp-frontend`.herokuapp.com/](https://lojajp-frontend.herokuapp.com/) para acesso ao serviço.
+
+#### Setando o projeto remoto que será utilizado pelo git
+
+Para realizar isso, utlize o comando:
+
+```shell
+$ heroku git:remote -a <nome_para_o_deploy>
+```
+
+Utilizando o nome que foi definido anteriormente.
+
+**Obs**: se já estiver dentro de um git e ter rodado o comando create. provavelmente esse passo já terá setado pelo comando.
+
+#### Definindo dependências no `package.json`
+
+Vamos declarar a dependência `http-server`, que é o serviço que vai rodar nosso react como uma página única.
+
+Vamos adicionar as seguintes linhas no arquivo `package.json`:
+
+```diff
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --progress --colors --inline --hot",
+    "production": "webpack --progress -p --define process.env.NODE_ENV='\"production\"'"
+  },
+  "keywords": [],
+  "author": "João Paulo de Melo",
+  "license": "ISC",
+  "devDependencies": {
+    "axios": "^0.19.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "6.2.10",
+    "babel-plugin-react-html-attrs": "2.0.0",
+    "babel-plugin-transform-object-rest-spread": "6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "6.22.0",
+    "bootstrap3": "^3.3.5",
+    "css-loader": "0.26.1",
+    "extract-text-webpack-plugin": "1.0.1",
+    "file-loader": "0.9.0",
+    "font-awesome": "4.7.0",
+    "ionicons": "3.0.0",
+    "jquery": "^3.4.1",
+    "lodash": "^4.17.11",
+    "popper.js": "^1.14.7",
+    "react": "15.4.2",
+    "react-dom": "15.4.2",
+    "react-iframe": "^1.5.0",
+    "react-redux": "4.4.6",
+    "react-redux-toastr": "4.4.2",
+    "react-router": "3.0.2",
+    "redux": "3.6.0",
+    "redux-form": "6.4.1",
+    "redux-multi": "0.1.12",
+    "redux-promise": "0.5.3",
+    "redux-thunk": "2.1.0",
+    "style-loader": "0.13.1",
+    "webpack": "1.14.0",
+    "webpack-dev-server": "1.16.2"
+  },
++  "dependencies": {
++    "http-server": "0.10.0"
++  }
+}
+```
+
+Ficará assim:
+
+```js
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --progress --colors --inline --hot",
+    "production": "webpack --progress -p --define process.env.NODE_ENV='\"production\"'"
+  },
+  "keywords": [],
+  "author": "João Paulo de Melo",
+  "license": "ISC",
+  "devDependencies": {
+    "axios": "^0.19.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "6.2.10",
+    "babel-plugin-react-html-attrs": "2.0.0",
+    "babel-plugin-transform-object-rest-spread": "6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "6.22.0",
+    "bootstrap3": "^3.3.5",
+    "css-loader": "0.26.1",
+    "extract-text-webpack-plugin": "1.0.1",
+    "file-loader": "0.9.0",
+    "font-awesome": "4.7.0",
+    "ionicons": "3.0.0",
+    "jquery": "^3.4.1",
+    "lodash": "^4.17.11",
+    "popper.js": "^1.14.7",
+    "react": "15.4.2",
+    "react-dom": "15.4.2",
+    "react-iframe": "^1.5.0",
+    "react-redux": "4.4.6",
+    "react-redux-toastr": "4.4.2",
+    "react-router": "3.0.2",
+    "redux": "3.6.0",
+    "redux-form": "6.4.1",
+    "redux-multi": "0.1.12",
+    "redux-promise": "0.5.3",
+    "redux-thunk": "2.1.0",
+    "style-loader": "0.13.1",
+    "webpack": "1.14.0",
+    "webpack-dev-server": "1.16.2"
+  },
+  "dependencies": {
+    "http-server": "0.10.0"
+  }
+}
+```
+
+#### Definindo incialização do servilo via `Procfile`
+
+Pra iniciar o nosso frontend, vamos utilizar o serviço de Procfile que o heroku nos disponibiliza. Pra isso, criamos um arquivo na raiz de nosso projeto chamado `Procfile`
+
+Vamos adicionar essa linha no arquivo `Procfile`:
+
+```shell
+web: http-server -p $PORT
+```
+
+Antes dos dois pontos, é o nome que será dado ao processo que será criado. Isso facilita a identificação do que está rodando no shell quando formos analisar erros. o que está escrito após os dois pontos, é o comando que o heroku terá que rodar para iniciar o nosso serviço. `$PORT` é a variavel de ambiente da porta que o heroku disponibiliza para rodar o serviço.
+
+Com isso o heroku já saberá como rodar nosso serviço na inicialização.
+
+O `http-server` é um serviço que utiliza a pasta public para rodar um serviço estático. ele busca pelo arquivo `index.html` para rodar como primeira página, que é a unica página de entrada que nosso frontend react tem.
+
+#### Gerando os arquivos em produção
+
+Basta rodarmos o script de produção:
+
+```shell
+$ npm run production
+```
+
+Agora basta enviar tudo para o heroku.
+
+#### Enviando todo o serviço para o heroku para o deploy
+
+Para fazer isto, basta realizar os 3 passos simples de um commit.
+
+Adicionar todos os arquivos do projeto para o commit:
+
+```shell
+$ git add .
+```
+
+Dar um texto de referência ao que está sendo realizado neste commit:
+
+```shell
+$ git commit -m "deploy da versão x"
+```
+
+Por fim, basta enviá-lo para o heroku com o comando push:
+
+```shell
+$ git push heroku master
+```
+
+Se tudo ocorrer corretamente, no final deste comando terá algo do tipo:
+
+```shell
+...
+remote:        Released v28
+remote:        https://lojajp-frontend.herokuapp.com/ deployed to Heroku
+remote: 
+remote: Verifying deploy... done.
+To https://git.heroku.com/lojajp-frontend.git
+   8293bba..d758e58  master -> master
+```
+
+No exemplo acima, o servidor estará rodando em [https://lojajp-frontend.herokuapp.com/](https://lojajp-frontend.herokuapp.com/).
+
+Caso ocorra algum erro você pode analisá-lo pelo comando:
+
+```shell
+$ heroku logs --tail
+```
+
 ## Créditos
 
 Criado por: [João Paulo de Melo](https://www.jpmdik.com.br/)
