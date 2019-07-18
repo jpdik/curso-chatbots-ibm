@@ -131,8 +131,13 @@ module.exports.analisarConstruirMensagem = (input) => new Promise((resolve, reje
             session_id: user.session_id,
             context: user.context,
             input: user.input
-        })
-            .then((res) => { // checo os erros e resposta do watson
+        }), (err, res) => { // checo os erros e resposta do watson
+            // Se tiver algum erro, simplesmente falho a promisse
+            if (err) {
+                console.log(err);
+                reject(err);
+            }
+            else{
                 reconstruirIntencoesEntidadesContexto(res).then((resp) => {
                     // se tiver ok passo para o reconstruirIntencoesEntidadesContexto fazer as devidas alterações e retornar uma nova resposta (resp)
 
@@ -155,9 +160,7 @@ module.exports.analisarConstruirMensagem = (input) => new Promise((resolve, reje
                     resolve(user); // retorno o objeto usuário e o objeto de resposta do watson.
                 });
 
-            }).catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    })
+            }
+        }
+    });
 });
