@@ -4,9 +4,9 @@ Material do curso de chatbots do projeto Laboratório Redes de Conhecimento
 
 Material do curso de chatbots preparado para o projeto de extensão Laboratório de Redes de Conhecimento – Instituto Federal do Sudeste de Minas Gerais, Campus Barbacena.
 
-Frontend: <a href="https://github.com/jpdik/curso-chatbots-ibm/tree/frontend">Link</a>
+Frontend: <a href="https://github.com/jpdik/loja_de_roupas_frontend">Link</a>
 
-Backend: <a href="https://github.com/jpdik/curso-chatbots-ibm/tree/backend">Link</a>
+Backend: <a href="https://github.com/jpdik/loja_de_roupas_backend">Link</a>
 
 Scrapping: <a href="https://github.com/jpdik/curso-chatbots-ibm/tree/web-scraping">Link</a>
 
